@@ -30,6 +30,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
+    print("Build homepage");
     return Scaffold(
       appBar: AppBar(title: Text(widget.title)),
       body: FutureBuilder<List<UnsplashImage>>(
@@ -42,7 +43,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   itemBuilder: (_, int index) {
                     return GalleryItem.fromUnsplashImage(
                       unsplashImage: snapshot.data[index],
-                      width: 250,
+                      imageWidth: MediaQuery.of(context).orientation == Orientation.portrait ? 250: 450,
                       margin: EdgeInsets.all(5),
                     );
                   });

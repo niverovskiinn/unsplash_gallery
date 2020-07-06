@@ -5,8 +5,8 @@ class GalleryItem extends StatelessWidget {
   final String link;
   final String imageName;
   final String author;
-  final int width;
-  final int height;
+  final int imageWidth;
+  final int imageHeight;
   final String format;
   final String fit;
   final EdgeInsetsGeometry margin;
@@ -18,8 +18,8 @@ class GalleryItem extends StatelessWidget {
   /// The [margin] is empty space to surround the [Container]
   ///
   /// Details about other parameters can be read on:
-  /// [width] - https://docs.imgix.com/apis/url/size/w
-  /// [height] - https://docs.imgix.com/apis/url/size/h
+  /// [imageWidth] - https://docs.imgix.com/apis/url/size/w
+  /// [imageHeight] - https://docs.imgix.com/apis/url/size/h
   /// [format] - https://docs.imgix.com/apis/url/format/fm
   /// [fit] - https://docs.imgix.com/apis/url/size/fit
   const GalleryItem(
@@ -27,12 +27,15 @@ class GalleryItem extends StatelessWidget {
       @required this.link,
       this.author,
       this.imageName,
-      this.width,
-      this.height,
+      this.imageWidth,
+      this.imageHeight,
       this.format = 'jpg',
       this.fit = 'max',
       this.margin})
-      : super(key: key);
+      : assert(imageWidth != null || imageWidth != 0),
+        assert(imageHeight != null || imageHeight != 0),
+        assert(link != null),
+        super(key: key);
 
   /// Creates a widget that displays an image with [author] and [imageName]
   /// from [UnsplashImage]
@@ -42,15 +45,15 @@ class GalleryItem extends StatelessWidget {
   /// The [margin] is empty space to surround the [Container]
   ///
   /// Details about other parameters can be read at:
-  /// [width] - https://docs.imgix.com/apis/url/size/w
-  /// [height] - https://docs.imgix.com/apis/url/size/h
+  /// [imageWidth] - https://docs.imgix.com/apis/url/size/w
+  /// [imageHeight] - https://docs.imgix.com/apis/url/size/h
   /// [format] - https://docs.imgix.com/apis/url/format/fm
   /// [fit] - https://docs.imgix.com/apis/url/size/fit
 
   factory GalleryItem.fromUnsplashImage(
       {@required UnsplashImage unsplashImage,
-      int width,
-      int height,
+      int imageWidth,
+      int imageHeight,
       String format,
       String fit,
       EdgeInsetsGeometry margin}) {
@@ -58,8 +61,8 @@ class GalleryItem extends StatelessWidget {
       link: unsplashImage.imageSource,
       author: unsplashImage.author,
       imageName: unsplashImage.title,
-      width: width,
-      height: height,
+      imageWidth: imageWidth,
+      imageHeight: imageHeight,
       fit: fit,
       format: format,
       margin: margin,
@@ -70,39 +73,63 @@ class GalleryItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       margin: margin,
-      child: Row(
-        children: [
-          Image.network(
-            link + "&w=$width&h=$height&fm=$format&fit=$fit",
-            loadingBuilder: (BuildContext context, Widget child,
-                ImageChunkEvent loadingProgress) {
-              if (loadingProgress == null) return child;
-              return Center(
-                child: CircularProgressIndicator(
-                  value: loadingProgress.expectedTotalBytes != null
-                      ? loadingProgress.cumulativeBytesLoaded /
-                          loadingProgress.expectedTotalBytes
-                      : null,
-                ),
-              );
-            },
-          ),
-          Expanded(
-              child: Container(
+      padding: EdgeInsets.all(5),
+      child: Material(
+        borderRadius: BorderRadius.all(Radius.circular(5)),
+        child: InkWell(
+          onTap: () => _navigateToImage(context),
+          child: Row(
+            children: [
+              _openImageWithLoader(
+                  link + "&w=$imageWidth&h=$imageHeight&fm=$format&fit=$fit"),
+              Expanded(
+                  child: Container(
                 padding: EdgeInsets.only(left: 10),
-            child:
-                Column(
-                    crossAxisAlignment: CrossAxisAlignment.start, children: [
-              Text("Author: $author",
-                  style: TextStyle(fontSize: 20, color: Colors.grey)),
-              Text(
-                imageName,
-                style: TextStyle(fontSize: 10),
-              ),
-            ]),
-          ))
-        ],
+                child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text("Author: $author",
+                          style: TextStyle(fontSize: 20, color: Colors.grey)),
+                      if (imageName != null)
+                        Text(
+                          imageName,
+                          style: TextStyle(fontSize: 10),
+                        ),
+                    ]),
+              ))
+            ],
+          ),
+        ),
       ),
     );
+  }
+
+  Image _openImageWithLoader(String link) {
+    print("Start download image from internet");
+    return Image.network(
+      link,
+      loadingBuilder: (BuildContext context, Widget child,
+          ImageChunkEvent loadingProgress) {
+        if (loadingProgress == null) return child;
+        return Center(
+          child: CircularProgressIndicator(
+            value: loadingProgress.expectedTotalBytes != null
+                ? loadingProgress.cumulativeBytesLoaded /
+                    loadingProgress.expectedTotalBytes
+                : null,
+          ),
+        );
+      },
+    );
+  }
+
+  void _navigateToImage(BuildContext context) {
+    print("Open image screen");
+    Navigator.of(context).push(MaterialPageRoute<Null>(
+      builder: (BuildContext context) {
+        return Scaffold( appBar: AppBar(),
+          body: Center(child: _openImageWithLoader(link)));
+      },
+    ));
   }
 }
