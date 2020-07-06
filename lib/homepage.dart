@@ -22,13 +22,7 @@ class _MyHomePageState extends State<MyHomePage> {
     super.initState();
     futureImagesList = _dataService.fetchUnsplashImages();
   }
-
-  void refresh() {
-    setState(() {
-      futureImagesList = _dataService.fetchUnsplashImages();
-    });
-  }
-
+  
   @override
   Widget build(BuildContext context) {
     print("Build homepage");
