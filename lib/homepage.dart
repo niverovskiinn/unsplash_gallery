@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:unsplash_gallery/config/constants.dart' as Constants;
 import 'package:unsplash_gallery/models/unsplash_image.dart';
 import 'package:unsplash_gallery/services/data_service.dart';
 import 'package:unsplash_gallery/widgets/gallery_item.dart';
@@ -43,7 +44,10 @@ class _MyHomePageState extends State<MyHomePage> {
                   itemBuilder: (_, int index) {
                     return GalleryItem.fromUnsplashImage(
                       unsplashImage: snapshot.data[index],
-                      imageWidth: MediaQuery.of(context).orientation == Orientation.portrait ? 250: 450,
+                      imageWidth: MediaQuery.of(context).orientation ==
+                              Orientation.portrait
+                          ? Constants.portraitImageWidth
+                          : Constants.landscapeImageWidth,
                       margin: EdgeInsets.all(5),
                     );
                   });

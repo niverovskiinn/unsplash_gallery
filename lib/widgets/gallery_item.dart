@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:unsplash_gallery/models/unsplash_image.dart';
+import 'package:unsplash_gallery/config/constants.dart' as Constants;
+
 
 class GalleryItem extends StatelessWidget {
   final String link;
@@ -89,11 +91,11 @@ class GalleryItem extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text("Author: $author",
-                          style: TextStyle(fontSize: 20, color: Colors.grey)),
+                          style: TextStyle(fontSize: Constants.authorFontSize, color: Constants.mainColor)),
                       if (imageName != null)
                         Text(
                           imageName,
-                          style: TextStyle(fontSize: 10),
+                          style: TextStyle(fontSize: Constants.imageNameFontSize),
                         ),
                     ]),
               ))
@@ -105,7 +107,6 @@ class GalleryItem extends StatelessWidget {
   }
 
   Image _openImageWithLoader(String link) {
-    print("Start download image from internet");
     return Image.network(
       link,
       loadingBuilder: (BuildContext context, Widget child,
@@ -125,10 +126,14 @@ class GalleryItem extends StatelessWidget {
 
   void _navigateToImage(BuildContext context) {
     print("Open image screen");
-    Navigator.of(context).push(MaterialPageRoute<Null>(
+    Navigator.of(context).push(MaterialPageRoute(
       builder: (BuildContext context) {
-        return Scaffold( appBar: AppBar(),
-          body: Center(child: _openImageWithLoader(link)));
+        return Scaffold(
+            appBar: AppBar(),
+            body: Center(
+                child: _openImageWithLoader(
+                    "$link&w=${MediaQuery.of(context).size.width}"
+                        "&h=${MediaQuery.of(context).size.height}")));
       },
     ));
   }

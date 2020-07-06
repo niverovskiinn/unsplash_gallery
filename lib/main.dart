@@ -13,8 +13,8 @@ class MyApp extends StatelessWidget {
       title: Constants.title,
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        scaffoldBackgroundColor: Colors.grey,
-        primarySwatch: Colors.blueGrey,
+        scaffoldBackgroundColor: Constants.mainColor,
+        primarySwatch: Constants.semiColor,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
       home: MyHomePage(title: Constants.title),
